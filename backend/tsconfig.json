@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    /* File Layout */
+    "rootDir": "./",
+    "outDir": "./dist",
+    /* Modern 2026 Node Settings */
+    "target": "ES2022", // Allows modern JS features (async/await, etc.)
+    "module": "NodeNext", // 🌟 Core change: Explicitly uses Node's native ESM system
+    "moduleResolution": "NodeNext", // 🌟 Ensures TS understands package.json exports correctly
+    "esModuleInterop": true, // Gracefully handles older modules
+    /* Types & Formats */
+    "types": [
+      "node"
+    ],
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    /* Strict Safety Controls */
+    "strict": true,
+    "noUncheckedIndexedAccess": true, // Catches undefined errors on array lookups
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true, // Speeds up compilation
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": [
+    "index.ts",
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
