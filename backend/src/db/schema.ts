@@ -129,8 +129,8 @@ export const genderEnum = pgEnum("gender", ["male", "female", "other"])
 export const userProfiles = pgTable("user_profiles", {
     id: text("id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
     username: text("username").notNull().unique().default(sql`'user' || floor(random() * (99999999 - 10000000 + 1) + 10000000)::text`),
-    firstName: text("first_name").notNull(),
-    lastName: text("last_name").notNull(),
+    firstName: text("first_name").notNull().default(""),
+    lastName: text("last_name").notNull().default(""),
     bio: text("bio"),
     pfp: text("pfp"),
     background: text("background"),

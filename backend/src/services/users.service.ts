@@ -5,8 +5,9 @@ import { db } from '../db/db.ts';
 import { userProfiles } from "../db/schema.ts";
 import { eq } from 'drizzle-orm';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { NotFoundError } from "../lib/Errors.ts";
 
-const getPresignedUrl = async (userId:string, contentType:string, folder:"avatars" | "banners") => {
+const getPresignedUrl = async (userId: string, contentType: string, folder: "avatars" | "banners") => {
     if(!contentType.startsWith('image/')) throw new Error('Invalid file!');
     const fileExtension = contentType.split('/')[1];
     const r2Key = `public/${folder}/${folder === 'avatars' ? 'original' : ''}/${userId}.${fileExtension}`;
@@ -34,4 +35,16 @@ export const UserService = {
     saveBanner: async (userId: string, publicUrl: string) => {
       await db.update(userProfiles).set({ background: publicUrl }).where(eq(userProfiles.id, userId));
     },
+
+    setupProfile: async (userId: string, data: { username?: string, firstName: string, lastName: string }) => {
+      const [profile] = await db
+        .update(userProfiles)
+        .set(data)
+        .where(eq(userProfiles.id, userId))
+        .returning();
+
+      if(!profile) throw new NotFoundError('Profile not found!');
+
+      return profile;
+    }
 };

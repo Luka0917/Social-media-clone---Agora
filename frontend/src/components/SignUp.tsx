@@ -2,6 +2,8 @@ import { useId, useState } from "react";
 import { useStore } from "../store/store";
 import { useNavigate } from "react-router";
 import { authClient } from "../lib/auth-clients";
+import axios from 'axios';
+import { API_URL } from "../lib/constants";
 import { LuEye } from "react-icons/lu";
 import { LuEyeOff } from "react-icons/lu";
 
@@ -29,12 +31,23 @@ export default function SignUp({ toggleAuth }: SignInProps){
         const email  = formData.get('email') as string;
         const password = formData.get('password') as string;
 
-        const { data, error } = await authClient.signUp.email({ email, password, name: 'x' }, { onSuccess: () => navigate('/') })
-        if(error) console.error(error);
-        if(data) console.log(data);
-        console.log(username);
-        console.log(firstName);
-        console.log(lastName);
+        const { data, error } = await authClient.signUp.email({ email, password, name: `${firstName} ${lastName}` })
+        if(error){
+            console.error(error);
+            return;
+        }
+        if(data){
+            try{
+                await axios.post(
+                    `${API_URL}/users/profile`,
+                    { username, firstName, lastName },
+                    { withCredentials: true }
+                );
+                navigate('/');
+            }catch(err){
+                console.error(err);
+            }
+        };
     };
 
     return(
@@ -49,11 +62,11 @@ export default function SignUp({ toggleAuth }: SignInProps){
                 <div className="flex justify-between items-center mt-3 w-full">
                     <div className="flex flex-col w-[48%]">
                         <label htmlFor={firstNameId} className={`${theme === 'light' ? 'text-[#0e141f]' : 'text-[#eef2f7]'} text-sm font-medium`}>First name</label>
-                        <input type="text" name="firstName" id={firstNameId} className={`${theme === 'light' ? 'border-[#dae0e8] ring-[#1e77ed] placeholder:text-[#9098a3]' : 'border-[#2b2e35] ring-[#4288ed] placeholder:text-[#7b848f] text-[#eef2f7]'} rounded-full h-9.5 shadow-sm text-sm border pl-3 outline-none focus:ring-1`} />
+                        <input type="text" required name="firstName" id={firstNameId} className={`${theme === 'light' ? 'border-[#dae0e8] ring-[#1e77ed] placeholder:text-[#9098a3]' : 'border-[#2b2e35] ring-[#4288ed] placeholder:text-[#7b848f] text-[#eef2f7]'} rounded-full h-9.5 shadow-sm text-sm border pl-3 outline-none focus:ring-1`} />
                     </div>
                     <div className="flex flex-col w-[48%]">
                         <label htmlFor={lastNameId} className={`${theme === 'light' ? 'text-[#0e141f]' : 'text-[#eef2f7]'} text-sm font-medium`}>Last name</label>
-                        <input type="text" name="lastName" id={lastNameId} className={`${theme === 'light' ? 'border-[#dae0e8] ring-[#1e77ed] placeholder:text-[#9098a3]' : 'border-[#2b2e35] ring-[#4288ed] placeholder:text-[#7b848f] text-[#eef2f7]'} rounded-full h-9.5 shadow-sm text-sm border pl-3 outline-none focus:ring-1`} />
+                        <input type="text" required name="lastName" id={lastNameId} className={`${theme === 'light' ? 'border-[#dae0e8] ring-[#1e77ed] placeholder:text-[#9098a3]' : 'border-[#2b2e35] ring-[#4288ed] placeholder:text-[#7b848f] text-[#eef2f7]'} rounded-full h-9.5 shadow-sm text-sm border pl-3 outline-none focus:ring-1`} />
                     </div>
                 </div>
                 <div className="flex flex-col mt-3">

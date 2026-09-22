@@ -1,3 +1,4 @@
-import { createAuthClient } from "better-auth/react";
+import { createAuthClient } from 'better-auth/react';
+import { API_URL } from './constants'
 
-export const authClient = createAuthClient({baseURL: "http://localhost:1717"})
+export const authClient = createAuthClient({ baseURL: API_URL });
