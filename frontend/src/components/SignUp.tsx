@@ -21,7 +21,7 @@ export default function SignUp({ toggleAuth }: SignInProps){
     const emailId = useId();
     const PasswordId = useId();
 
-    async function SignUpForm(e:any){
+    async function SignUpForm(e: any){
         e.preventDefault();
 
         const formData = new FormData(e.target);

@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
 import { useStore } from "../store/store";
 import useWinowWidth from "../hooks/useWindowWidth";
 import { useNavigate } from "react-router";
 import { Link } from "react-router";
+import axios from "axios";
+import { API_URL } from "../lib/constants";
 import { authClient } from "../lib/auth-clients";
 import MobileNavbar from "./MobileNavbar";
 import TabletNavbar from "./TabletNavbar";
@@ -16,6 +19,7 @@ export default function Navbar(){
     const { theme, themeToggle } = useStore();
     const navigate = useNavigate();
     const { data: session} = authClient.useSession();
+    const [profile, setProfile] = useState<{ username: string, avatar: string | null } | null>(null);
 
     async function signOut(){
         await authClient.signOut({ 
@@ -27,12 +31,24 @@ export default function Navbar(){
         })
     };
 
+    useEffect(() => {
+        async function fetchProfile(){
+            try{
+                const { data } = await axios.get(`${API_URL}/users/me/profile`, { withCredentials: true });
+                setProfile(data);
+            }catch(err){
+                console.error(err);
+            }
+        }
+        if(session) fetchProfile();
+    }, [session?.user.id]);
+
     if(width < 768) return <MobileNavbar />
 
     if(width < 1024) return <TabletNavbar />
 
     return (
-        <div className={`${theme === 'light' ? 'bg-[#f5f8fb] text-[#0e141f] border-[#dae0e8]' : 'bg-[#080d14] text-[#eef2f7] border-[#222a35]'} flex justify-between items-center py-2 px-5 border-b sticky top-0 z-10`}>
+        <div className={`${theme === 'light' ? 'bg-[#f5f8fb] text-[#0e141f] border-[#dae0e8]' : 'bg-[#080d14] text-[#eef2f7] border-[#222a35]'} flex justify-between items-center py-2 px-5 border-b sticky top-0 z-20`}>
             <div className="flex justify-center items-center gap-5">
                 <Link to={'/'} className="font text-2xl font-bold bg-[linear-gradient(115deg,oklch(0.58_0.2_258),oklch(0.79_0.14_200))] bg-clip-text text-transparent">Agora</Link>
                 <div className={`${theme === 'light' ? 'bg-[#eef3f9] border-[#dae0e8] ring-[#9ac2f6]' : 'bg-[#141a25] border-[#222a35] ring-[#224477]'} border rounded-full py-1.5 px-2 flex justify-start items-center w-100 focus-within:ring-2 transition-all duration-200`}>
@@ -53,8 +69,8 @@ export default function Navbar(){
                         <LuLogOut size={20} />
                 </button>
                 <Link to={'/profile'} className={`${theme === 'light' ? 'border-[#dae0e8] bg-[#f0f4fa] hover:bg-[#deeaf9]' : 'border-[#2b3038] bg-[#131822] hover:bg-[#0e192b]'} flex justify-center items-center gap-2 border rounded-full p-0.5 pr-3 transition-all duration-200`}>
-                    <img src="../../public/pfp.svg" alt="pfp" className={`${theme === 'light' ? 'border-[#9bc1f5]' : 'border-[#29497c]'} border-2 rounded-full w-10 h-10`} />
-                    <span className={`${theme === 'light' ? 'text-[#0e141f]' : 'text-[#eef2f7]'} text-sm font-medium`}>{session?.user.email}</span>
+                    <img src={profile?.avatar || "../../public/pfp.svg"} alt="avatar" className={`${theme === 'light' ? 'border-[#9bc1f5]' : 'border-[#29497c]'} border-2 rounded-full w-10 h-10`} />
+                    <span className={`${theme === 'light' ? 'text-[#0e141f]' : 'text-[#eef2f7]'} text-sm font-medium`}>@{profile?.username}</span>
                 </Link>
             </div>
         </div>

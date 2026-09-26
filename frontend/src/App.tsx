@@ -19,7 +19,7 @@ function App() {
         <MostFollowedbar />
       </div>
 
-      <div className="w-100 h-100 bg-red-500 mt-150"></div>
+      <div className="w-100 h-100 bg-red-500 mt-170"></div>
       <div className="w-100 h-100 bg-red-500"></div>
       <div className="w-100 h-100 bg-red-500"></div>
       <div className="w-100 h-100 bg-red-500"></div>
